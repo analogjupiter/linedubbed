@@ -1,0 +1,15 @@
+{
+    "name": "linedubbed/runner",
+    "type": "project",
+    "license": "BSL-1.0",
+    "autoload": {
+        "psr-4": {
+            "Linedubbed\\Runner\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "8.2",
+        "guzzlehttp/guzzle": "^7.8"
+    }
+}
