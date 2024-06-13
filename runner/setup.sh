@@ -28,7 +28,7 @@ fi
 
 # Unsupported OS?
 source /etc/os-release
-if [ "$ID" != 'linuxmint' ]; then
+if [ "$ID" != 'debian' ]; then
 	errorln "Unsupported OS \`${ID}\` - aka \`${PRETTY_NAME}\`."
 	exit 1
 fi
