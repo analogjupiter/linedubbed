@@ -82,7 +82,7 @@ if [ -d "${userDaemonHome}" ]; then
 fi
 
 # Prompt user confirmation.
-read -p 'Install lineDUBbed/runner? [yN]' -r confirmInstallation
+read -p 'Install lineDUBbed/runner on this system? [yN]' -r confirmInstallation
 if [ "${confirmInstallation}" != 'y' ] && [ "${confirmInstallation}" != 'Y' ]; then
 	writeln Installation canceled.
 	exit 1
@@ -118,9 +118,9 @@ useradd \
 # Configure doas.
 writeln '= Configuring `doas`.'
 echo "permit nopass root as ${userInstaller}" >>"${doasConf}"
-echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args start ldrd.service" >>"${doasConf}"
+echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args start   ldrd.service" >>"${doasConf}"
+echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args stop    ldrd.service" >>"${doasConf}"
 echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args restart ldrd.service" >>"${doasConf}"
-echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args stop ldrd.service" >>"${doasConf}"
 echo "permit nopass ${userInstaller} as ${userDaemon}" >>"${doasConf}"
 
 # Download application.

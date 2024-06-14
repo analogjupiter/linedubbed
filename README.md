@@ -6,6 +6,8 @@ DUB package testing platform
 
 ## Runner
 
+Abbreviated as LDR.
+
 ### System requirements
 
 | Resource | Minimum | Recommended |
@@ -16,14 +18,16 @@ DUB package testing platform
 
 Runners are supposed to be treated like an appliance.
 Install the runner on a newly installed machine
-that runs only for this single specific purpose.
+dedicated to running LDR.
 
 Virtual machines or containers are fine,
-but will yield less accurate results.
+but might yield less accurate test results.
 
 To reduce complexity and provide a more streamlined user experience,
 each release of the runner supports only a single operating system.
 There are no plans to add support for non-Debian systems or Debian derivatives.
+(With a few patches to the installation,
+you should be able to get it up and running on unsupported systems, too.)
 
 ### Setup
 
