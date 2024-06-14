@@ -25,11 +25,29 @@ if [ "$eUid" != '0' ]; then
 	exit 1
 fi
 
-# Prompt user confirmation.
-read -p 'Install lineDUBbed runner? [yN]' -r confirmInstallation
-if [ "$confirmInstallation" != 'y' ] && [ "$confirmInstallation" != 'Y' ]; then
-	writeln Installation canceled.
-	exit 1
+# Handle args.
+while getopts ":y" opt; do
+    case "${opt}" in
+        y)
+            confirmInstallation='y'
+            ;;
+		\?)
+			errorln "Unknown argument."
+			exit 1
+			;;
+		*)
+			errorln "An unhandled getopts error occurred."
+			exit 1
+    esac
+done
+
+if [ "$confirmInstallation" != 'y' ]; then
+	# Prompt user confirmation.
+	read -p 'Update lineDUBbed runner? [Yn]' -r confirmInstallation
+	if [ "$confirmInstallation" != 'y' ] && [ "$confirmInstallation" != 'Y' ] && [ "$confirmInstallation" != '' ]; then
+		writeln Installation canceled.
+		exit 1
+	fi
 fi
 
 # Install dependencies.
@@ -37,5 +55,5 @@ writeln '= Installing dependencies.'
 composer install --no-dev --optimize-autoloader -n
 
 # Goodbye.
-writeln 'Installation completed.'
+writeln '= Update completed.'
 exit 0

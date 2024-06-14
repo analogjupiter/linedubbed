@@ -47,6 +47,7 @@ if [ "$confirmInstallation" != 'y' ] && [ "$confirmInstallation" != 'Y' ]; then
 fi
 
 # Install dependencies.
+writeln '= Installing dependencies.'
 apt-get update
 apt-get -y install \
 	composer \
@@ -55,13 +56,15 @@ apt-get -y install \
 	php-curl
 
 # Download application.
+writeln '= Downloading repository.'
 git clone -b "$repoBranch" --single-branch --depth=1 "$repoURL" "$installPath"
 
 # Run updater.
+writeln '= Launching updater to finalize the installation process.'
 pushd "${installPath}/runner"
-./updater.sh
+./updater.sh -y
 popd
 
 # Goodbye.
-writeln 'Installation completed.'
+writeln '= Installation completed.'
 exit 0
