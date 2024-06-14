@@ -4,12 +4,13 @@
     "license": "BSL-1.0",
     "autoload": {
         "psr-4": {
-            "Linedubbed\\Runner\\": "src/"
+            "Linedubbed\\Runner\\": "src/lib/"
         }
     },
     "minimum-stability": "stable",
     "require": {
         "php": "8.2.*",
-        "guzzlehttp/guzzle": "^7.8"
+        "guzzlehttp/guzzle": "^7.8",
+        "symfony/console": "^7.1"
     }
 }
