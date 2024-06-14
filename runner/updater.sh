@@ -17,14 +17,14 @@ userInstaller='ldri'
 sentinelFile='.linedubbed-runner-repo'
 
 # Wrong working-directory?
-if [ ! -f "$sentinelFile" ]; then
+if [ ! -f "${sentinelFile}" ]; then
 	errorln 'This script must be run from the `linedubbed/runner` installation directory.'
 	writeln "Current working-directory: \`$(pwd)\`"
 	exit 1
 fi
 
 # Not running as "installer"?
-if [ "$(whoami)" != "$userInstaller" ]; then
+if [ "$(whoami)" != "${userInstaller}" ]; then
 	errorln "This script must be run as user \`${userInstaller}\`."
 	writeln "You might want to try \`doas -u ${userInstaller} ./updater.sh\`."
 	exit 1
@@ -46,10 +46,10 @@ while getopts ":y" opt; do
     esac
 done
 
-if [ "$confirmUpdate" != 'y' ]; then
+if [ "${confirmUpdate}" != 'y' ]; then
 	# Prompt user confirmation.
 	read -p 'Update lineDUBbed runner? [Yn]' -r confirmUpdate
-	if [ "$confirmUpdate" != 'y' ] && [ "$confirmUpdate" != 'Y' ] && [ "$confirmUpdate" != '' ]; then
+	if [ "${confirmUpdate}" != 'y' ] && [ "${confirmUpdate}" != 'Y' ] && [ "${confirmUpdate}" != '' ]; then
 		writeln Update canceled.
 		exit 1
 	fi
@@ -61,13 +61,11 @@ writeln '= Stopping the LDR daemon.'
 
 # Update repo.
 writeln '= Pulling latest version.'
-doas -u "$userInstaller" \
-	git pull --ff-only
+git pull --ff-only
 
 # Install dependencies.
 writeln '= Installing dependencies.'
-doas -u "$userInstaller" \
-	composer install --no-dev --optimize-autoloader -n
+composer install --no-dev --optimize-autoloader -n
 
 writeln '= Migrating installation.'
 ./ldr ldr:upgrade

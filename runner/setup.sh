@@ -125,8 +125,8 @@ echo "permit nopass ${userInstaller} as ${userDaemon}" >>"${doasConf}"
 
 # Download application.
 writeln '= Downloading repository.'
-doas -u "$userInstaller" \
-	git clone -b "$branch" --single-branch --depth=1 "${repoURL}" "${installPath}"
+doas -u "${userInstaller}" \
+	git clone -b "${branch}" --single-branch --depth=1 "${repoURL}" "${installPath}"
 
 # Install service.
 writeln '= Installing daemon as service-unit.'
@@ -147,7 +147,8 @@ Restart=always
 # Run updater.
 writeln '= Launching updater to finalize the installation process.'
 pushd "${installPath}/runner"
-./updater.sh -y
+doas -u "${userInstaller}" \
+	./updater.sh -y
 popd
 
 # Goodbye.
