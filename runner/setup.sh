@@ -88,7 +88,7 @@ if [ -d "${serviceUnitPath}" ]; then
 fi
 
 # Prompt user confirmation.
-read -p 'Install lineDUBbed/runner on this system? [yN]' -r confirmInstallation
+read -p 'Install lineDUBbed/runner on this system? [yN] ' -r confirmInstallation
 if [ "${confirmInstallation}" != 'y' ] && [ "${confirmInstallation}" != 'Y' ]; then
 	writeln Installation canceled.
 	exit 1
@@ -148,6 +148,9 @@ ExecStart=${installPath}/runner/ldr ldr:daemon
 TimeoutStartSec=0
 RestartSec=2
 Restart=always
+
+[Install]
+WantedBy=multi-user.target
 " >"${serviceUnitPath}"
 systemctl daemon-reload
 
@@ -163,7 +166,7 @@ writeln '= Installation completed.'
 
 # Enable/start LDR?
 writeln ''
-read -p 'Do you want to enable the lineDUBbed/runner daemon now? [Yn]' -r confirmDaemon
+read -p 'Do you want to enable the lineDUBbed/runner daemon now? [Yn] ' -r confirmDaemon
 if [ "${confirmDaemon}" != 'y' ] && [ "${confirmDaemon}" != 'Y' ] && [ "${confirmDaemon}" != '' ]; then
 	writeln 'Alright.'
 	exit 0

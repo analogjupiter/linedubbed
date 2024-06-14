@@ -48,7 +48,7 @@ done
 
 if [ "${confirmUpdate}" != 'y' ]; then
 	# Prompt user confirmation.
-	read -p 'Update lineDUBbed runner? [Yn]' -r confirmUpdate
+	read -p 'Update lineDUBbed runner? [Yn] ' -r confirmUpdate
 	if [ "${confirmUpdate}" != 'y' ] && [ "${confirmUpdate}" != 'Y' ] && [ "${confirmUpdate}" != '' ]; then
 		writeln 'Update canceled.'
 		exit 1
