@@ -50,14 +50,20 @@ if [ "${confirmUpdate}" != 'y' ]; then
 	# Prompt user confirmation.
 	read -p 'Update lineDUBbed runner? [Yn]' -r confirmUpdate
 	if [ "${confirmUpdate}" != 'y' ] && [ "${confirmUpdate}" != 'Y' ] && [ "${confirmUpdate}" != '' ]; then
-		writeln Update canceled.
+		writeln 'Update canceled.'
 		exit 1
 	fi
 fi
 
+# Check whether service is running.
+systemctl is-active --quiet ldrd.service
+[ $? -eq 0 ] && daemonWasRunning=true || daemonWasRunning=false
+
 # Stop service.
-writeln '= Stopping the LDR daemon.'
-doas -u root /bin/systemctl stop ldrd.service
+if [ $daemonWasRunning == true ]; then
+	writeln '= Stopping the LDR daemon.'
+	doas -u root /bin/systemctl stop ldrd.service
+fi
 
 # Update repo.
 writeln '= Pulling latest version.'
@@ -71,8 +77,10 @@ writeln '= Migrating installation.'
 ./ldr ldr:upgrade
 
 # Restart service.
-writeln '= Restarting the LDR daemon.'
-doas -u root /bin/systemctl start ldrd.service
+if [ $daemonWasRunning == true ]; then
+	writeln '= Restarting the LDR daemon.'
+	doas -u root /bin/systemctl start ldrd.service
+fi
 
 # Goodbye.
 writeln '= Update completed.'

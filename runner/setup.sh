@@ -81,6 +81,12 @@ if [ -d "${userDaemonHome}" ]; then
 	exit 1
 fi
 
+# Left-overs? (5)
+if [ -d "${serviceUnitPath}" ]; then
+	errorln "Path \`${serviceUnitPath}\` already exists. Looks like lineDUBbed/runner has already been installed."
+	exit 1
+fi
+
 # Prompt user confirmation.
 read -p 'Install lineDUBbed/runner on this system? [yN]' -r confirmInstallation
 if [ "${confirmInstallation}" != 'y' ] && [ "${confirmInstallation}" != 'Y' ]; then
@@ -143,6 +149,7 @@ TimeoutStartSec=0
 RestartSec=2
 Restart=always
 " >"${serviceUnitPath}"
+systemctl daemon-reload
 
 # Run updater.
 writeln '= Launching updater to finalize the installation process.'
@@ -153,4 +160,16 @@ popd
 
 # Goodbye.
 writeln '= Installation completed.'
+
+# Enable/start LDR?
+writeln ''
+read -p 'Do you want to enable the lineDUBbed/runner daemon now? [Yn]' -r confirmDaemon
+if [ "${confirmDaemon}" != 'y' ] && [ "${confirmDaemon}" != 'Y' ] && [ "${confirmDaemon}" != '' ]; then
+	writeln 'Alright.'
+	exit 0
+fi
+
+# Enable + start service.
+systemctl enable --now ldrd.service
+writeln '= Daemon has been enabled.'
 exit 0
