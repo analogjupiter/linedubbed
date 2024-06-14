@@ -106,14 +106,14 @@ useradd \
 	--create-home \
 	--home-dir "${userInstallerHome}" \
 	--shell /usr/sbin/nologin \
-	"$userInstaller"
+	"${userInstaller}"
 # Create "daemon" user.
 useradd \
 	--system \
 	--create-home \
 	--home-dir "${userDaemonHome}" \
 	--shell /usr/sbin/nologin \
-	"$userDaemon"
+	"${userDaemon}"
 
 # Configure doas.
 writeln '= Configuring `doas`.'
@@ -143,8 +143,6 @@ TimeoutStartSec=0
 RestartSec=2
 Restart=always
 " >"${serviceUnitPath}"
-
-mkdir '/var/lib/'
 
 # Run updater.
 writeln '= Launching updater to finalize the installation process.'
