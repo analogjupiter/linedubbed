@@ -57,7 +57,7 @@ fi
 
 # Stop service.
 writeln '= Stopping the LDR daemon.'
-/bin/systemctl stop ldrd.service
+doas -u root /bin/systemctl stop ldrd.service
 
 # Update repo.
 writeln '= Pulling latest version.'
@@ -72,7 +72,7 @@ writeln '= Migrating installation.'
 
 # Restart service.
 writeln '= Restarting the LDR daemon.'
-/bin/systemctl start ldrd.service
+doas -u root /bin/systemctl start ldrd.service
 
 # Goodbye.
 writeln '= Update completed.'
