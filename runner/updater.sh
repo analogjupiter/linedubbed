@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+#==================================#
+# lineDUBbed/runner updater script #
+#==================================#
+
 writeln() {
 	echo "$@" >&2
 }
@@ -9,6 +13,7 @@ errorln() {
 	writeln "Error: $@"
 }
 
+userInstaller='ldri'
 sentinelFile='.linedubbed-runner-repo'
 
 # Wrong working-directory?
@@ -18,10 +23,10 @@ if [ ! -f "$sentinelFile" ]; then
 	exit 1
 fi
 
-# Not running as root?
-eUid="$(id -u)"
-if [ "$eUid" != '0' ]; then
-	errorln 'This script must be run as `root`. You might want to try `sudo` or `doas`.'
+# Not running as "installer"?
+if [ "$(whoami)" != "$userInstaller" ]; then
+	errorln "This script must be run as user \`${userInstaller}\`."
+	writeln "You might want to try \`doas -u ${userInstaller} ./updater.sh\`."
 	exit 1
 fi
 
@@ -50,18 +55,26 @@ if [ "$confirmUpdate" != 'y' ]; then
 	fi
 fi
 
+# Stop service.
+writeln '= Stopping the LDR daemon.'
+/bin/systemctl stop ldrd.service
+
 # Update repo.
 writeln '= Pulling latest version.'
-doas -u ldub \
+doas -u "$userInstaller" \
 	git pull --ff-only
 
 # Install dependencies.
 writeln '= Installing dependencies.'
-doas -u ldub \
+doas -u "$userInstaller" \
 	composer install --no-dev --optimize-autoloader -n
 
 writeln '= Migrating installation.'
 ./ldr ldr:upgrade
+
+# Restart service.
+writeln '= Restarting the LDR daemon.'
+/bin/systemctl start ldrd.service
 
 # Goodbye.
 writeln '= Update completed.'

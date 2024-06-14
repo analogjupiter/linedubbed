@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+#================================#
+# lineDUBbed/runner setup script #
+#================================#
+
 writeln() {
 	echo "$@" >&2
 }
@@ -9,12 +13,23 @@ errorln() {
 	writeln "Error: $@"
 }
 
+userInstaller='ldri'
+userInstallerHome="/opt/${userInstaller}"
+userDaemon='ldrd'
+userDaemonHome="/var/lib/${userDaemon}"
+
 doasConf='/etc/doas.conf'
-userName='ldub'
-homePath="/opt/${userName}"
-installPath="${homePath}/install"
+installPath="${userInstallerHome}/app"
+serviceUnitPath='/etc/systemd/system/ldrd.service'
+
 repoURL='https://github.com/analogjupiter/linedubbed.git'
-repoBranch='stable'
+branch='main'
+
+# Script
+
+if [ -n "${LDR_BRANCH}" ]; then
+	branch=${LDR_BRANCH}
+fi
 
 # Not running as root?
 eUid="$(id -u)"
@@ -31,32 +46,44 @@ fi
 
 # Unsupported OS?
 source /etc/os-release
-if [ "$ID" != 'debian' ]; then
+if [ "${ID}" != 'debian' ]; then
 	errorln "Unsupported OS \`${ID}\` - aka \`${PRETTY_NAME}\`."
 	exit 1
 fi
 
 # Is lineDUBbed already installed?
-if [ -d "$installPath" ]; then
+if [ -d "${installPath}" ]; then
 	errorln "Path \`${installPath}\` already exists. Looks like lineDUBbed/runner has already been installed."
 	exit 1
 fi
 
 # Left-overs?
-if id -u "$userName" >/dev/null 2>&1; then
-	errorln "User \`${userName}\` already exists. Please install lineDUBbed on a clean system."
+if id -u "${userInstaller}" >/dev/null 2>&1; then
+	errorln "User \`${userInstaller}\` already exists. Please install lineDUBbed on a clean system."
 	exit 1
 fi
 
 # Left-overs? (2)
-if [ -d "$homePath" ]; then
-	errorln "Path \`${homePath}\` already exists. Looks like lineDUBbed/runner has already been installed."
+if id -u "${userDaemon}" >/dev/null 2>&1; then
+	errorln "User \`${userDaemon}\` already exists. Please install lineDUBbed on a clean system."
+	exit 1
+fi
+
+# Left-overs? (3)
+if [ -d "${userInstallerHome}" ]; then
+	errorln "Path \`${userInstallerHome}\` already exists. Looks like lineDUBbed/runner has already been installed."
+	exit 1
+fi
+
+# Left-overs? (4)
+if [ -d "${userDaemonHome}" ]; then
+	errorln "Path \`${userDaemonHome}\` already exists. Looks like lineDUBbed/runner has already been installed."
 	exit 1
 fi
 
 # Prompt user confirmation.
 read -p 'Install lineDUBbed/runner? [yN]' -r confirmInstallation
-if [ "$confirmInstallation" != 'y' ] && [ "$confirmInstallation" != 'Y' ]; then
+if [ "${confirmInstallation}" != 'y' ] && [ "${confirmInstallation}" != 'Y' ]; then
 	writeln Installation canceled.
 	exit 1
 fi
@@ -71,23 +98,53 @@ apt-get -y install \
 	php-cli \
 	php-curl
 
-# Create user.
-writeln '= Creating user.'
+# Create users.
+writeln '= Creating users.'
+# Create "installer" user.
 useradd \
 	--system \
 	--create-home \
-	--home-dir /opt/ldub \
+	--home-dir "${userInstallerHome}" \
 	--shell /usr/sbin/nologin \
-	"$userName"
+	"$userInstaller"
+# Create "daemon" user.
+useradd \
+	--system \
+	--create-home \
+	--home-dir "${userDaemonHome}" \
+	--shell /usr/sbin/nologin \
+	"$userDaemon"
 
 # Configure doas.
 writeln '= Configuring `doas`.'
-echo "permit nopass root as ${userName}" >>"$doasConf"
+echo "permit nopass root as ${userInstaller}" >>"${doasConf}"
+echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args start ldrd.service" >>"${doasConf}"
+echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args restart ldrd.service" >>"${doasConf}"
+echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args stop ldrd.service" >>"${doasConf}"
+echo "permit nopass ${userInstaller} as ${userDaemon}" >>"${doasConf}"
 
 # Download application.
 writeln '= Downloading repository.'
-doas -u "$userName" \
-	git clone -b "$repoBranch" --single-branch --depth=1 "$repoURL" "$installPath"
+doas -u "$userInstaller" \
+	git clone -b "$branch" --single-branch --depth=1 "${repoURL}" "${installPath}"
+
+# Install service.
+writeln '= Installing daemon as service-unit.'
+echo "[Unit]
+Description=lineDUBbed/runner daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=${userDaemonHome}
+ExecStart=${installPath}/runner/ldr ldr:daemon
+TimeoutStartSec=0
+RestartSec=2
+Restart=always
+" >"${serviceUnitPath}"
+
+mkdir '/var/lib/'
 
 # Run updater.
 writeln '= Launching updater to finalize the installation process.'

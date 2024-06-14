@@ -29,7 +29,7 @@ There are no plans to add support for non-Debian systems or Debian derivatives.
 
 ```sh
 apt-get update && apt-get -y install curl
-curl -sSLo ldr-setup.sh https://github.com/analogjupiter/linedubbed/blob/stable/runner/setup.sh?raw=true
+curl -sSLo ldr-setup.sh https://github.com/analogjupiter/linedubbed/blob/main/runner/setup.sh?raw=true
 chmod +x ldr-setup.sh
 ./ldr-setup.sh
 ```

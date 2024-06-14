@@ -11,6 +11,8 @@ function main(): int
 {
     $version = GitHelper::determineVersion(__DIR__ . '/..');
     $app = new Application('lineDUBbed/runner', $version);
+
+    $app->add(new \Linedubbed\Runner\Commands\DaemonCommand());
     $app->add(new \Linedubbed\Runner\Commands\UpgradeCommand());
 
     try {
