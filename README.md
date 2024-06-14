@@ -9,6 +9,7 @@ DUB package testing platform
 ### System requirements
 
 | Resource | Minimum | Recommended |
+| :-- | :-- | :-- |
 | Operating System | Debian 12 | Debian 12 |
 | CPU | dual-core | quad-core |
 | RAM | 2 GB | 8 GB |
