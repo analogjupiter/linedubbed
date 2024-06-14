@@ -29,7 +29,7 @@ fi
 while getopts ":y" opt; do
     case "${opt}" in
         y)
-            confirmInstallation='y'
+            confirmUpdate='y'
             ;;
 		\?)
 			errorln "Unknown argument."
@@ -41,18 +41,27 @@ while getopts ":y" opt; do
     esac
 done
 
-if [ "$confirmInstallation" != 'y' ]; then
+if [ "$confirmUpdate" != 'y' ]; then
 	# Prompt user confirmation.
-	read -p 'Update lineDUBbed runner? [Yn]' -r confirmInstallation
-	if [ "$confirmInstallation" != 'y' ] && [ "$confirmInstallation" != 'Y' ] && [ "$confirmInstallation" != '' ]; then
-		writeln Installation canceled.
+	read -p 'Update lineDUBbed runner? [Yn]' -r confirmUpdate
+	if [ "$confirmUpdate" != 'y' ] && [ "$confirmUpdate" != 'Y' ] && [ "$confirmUpdate" != '' ]; then
+		writeln Update canceled.
 		exit 1
 	fi
 fi
 
+# Update repo.
+writeln '= Pulling latest version.'
+doas -u ldub \
+	git pull --ff-only
+
 # Install dependencies.
 writeln '= Installing dependencies.'
-composer install --no-dev --optimize-autoloader -n
+doas -u ldub \
+	composer install --no-dev --optimize-autoloader -n
+
+writeln '= Migrating installation.'
+./ldr ldr:upgrade
 
 # Goodbye.
 writeln '= Update completed.'

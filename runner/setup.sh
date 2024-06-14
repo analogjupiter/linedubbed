@@ -9,7 +9,10 @@ errorln() {
 	writeln "Error: $@"
 }
 
-installPath='/opt/linedubbed'
+doasConf='/etc/doas.conf'
+userName='ldub'
+homePath="/opt/${userName}"
+installPath="${homePath}/install"
 repoURL='https://github.com/analogjupiter/linedubbed.git'
 repoBranch='stable'
 
@@ -35,12 +38,24 @@ fi
 
 # Is lineDUBbed already installed?
 if [ -d "$installPath" ]; then
-	errorln "Path \`${installPath}\` exists. Looks like lineDUBbed has already been installed."
+	errorln "Path \`${installPath}\` already exists. Looks like lineDUBbed/runner has already been installed."
+	exit 1
+fi
+
+# Left-overs?
+if id -u "$userName" >/dev/null 2>&1; then
+	errorln "User \`${userName}\` already exists. Please install lineDUBbed on a clean system."
+	exit 1
+fi
+
+# Left-overs? (2)
+if [ -d "$homePath" ]; then
+	errorln "Path \`${homePath}\` already exists. Looks like lineDUBbed/runner has already been installed."
 	exit 1
 fi
 
 # Prompt user confirmation.
-read -p 'Install lineDUBbed runner? [yN]' -r confirmInstallation
+read -p 'Install lineDUBbed/runner? [yN]' -r confirmInstallation
 if [ "$confirmInstallation" != 'y' ] && [ "$confirmInstallation" != 'Y' ]; then
 	writeln Installation canceled.
 	exit 1
@@ -51,13 +66,28 @@ writeln '= Installing dependencies.'
 apt-get update
 apt-get -y install \
 	composer \
+	doas \
 	git \
 	php-cli \
 	php-curl
 
+# Create user.
+writeln '= Creating user.'
+useradd \
+	--system \
+	--create-home \
+	--home-dir /opt/ldub \
+	--shell /usr/sbin/nologin \
+	"$userName"
+
+# Configure doas.
+writeln '= Configuring `doas`.'
+echo "permit nopass root as ${userName}" >>"$doasConf"
+
 # Download application.
 writeln '= Downloading repository.'
-git clone -b "$repoBranch" --single-branch --depth=1 "$repoURL" "$installPath"
+doas -u "$userName" \
+	git clone -b "$repoBranch" --single-branch --depth=1 "$repoURL" "$installPath"
 
 # Run updater.
 writeln '= Launching updater to finalize the installation process.'
