@@ -56,8 +56,10 @@ if [ "${confirmUpdate}" != 'y' ]; then
 fi
 
 # Check whether service is running.
+set +e
 systemctl is-active --quiet ldrd.service
 [ $? -eq 0 ] && daemonWasRunning=true || daemonWasRunning=false
+set -e
 
 # Stop service.
 if [ $daemonWasRunning == true ]; then
