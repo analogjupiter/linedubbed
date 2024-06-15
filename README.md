@@ -12,6 +12,7 @@ Abbreviated as LDR.
 
 | Resource | Minimum | Recommended |
 | :-- | :-- | :-- |
+| Machine | Virtual Machine | dedicated (“bare-metal”) |
 | Operating System | Debian 12 | Debian 12 |
 | CPU | dual-core | quad-core |
 | RAM | 2 GB | 8 GB |
@@ -20,8 +21,13 @@ Runners are supposed to be treated like an appliance.
 Install the runner on a newly installed machine
 dedicated to running LDR.
 
-Virtual machines or containers are fine,
-but might yield less accurate test results.
+A bare-metal installation isn’t necessary;
+virtual machines are fine, but might yield less accurate test results.
+
+Container virtualized installations (like LXC, LXD) are not supported.
+As LDR uses application containers itself, such setups would be subject to the
+complexity of nested containers. Assumptions and requirements of container
+engines usually aren’t met in those environments (without further tweaking).
 
 To reduce complexity and provide a more streamlined user experience,
 each release of the runner supports only a single operating system.
