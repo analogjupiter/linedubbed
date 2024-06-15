@@ -49,5 +49,5 @@ chmod +x ldr-setup.sh
 
 ```sh
 cd /opt/ldr/app/runner
-doas -u ldri ./updater.sh
+doas -u ldri ./update.sh
 ```

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-#==================================#
-# lineDUBbed/runner updater script #
-#==================================#
+#=================================#
+# lineDUBbed/runner update script #
+#=================================#
 
 writeln() {
 	echo "$@" >&2
@@ -26,7 +26,7 @@ fi
 # Not running as "installer"?
 if [ "$(whoami)" != "${userInstaller}" ]; then
 	errorln "This script must be run as user \`${userInstaller}\`."
-	writeln "You might want to try \`doas -u ${userInstaller} ./updater.sh\`."
+	writeln "You might want to try \`doas -u ${userInstaller} ./update.sh\`."
 	exit 1
 fi
 
