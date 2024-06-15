@@ -20,6 +20,7 @@ userDaemonHome="/var/lib/ldr"
 
 doasConf='/etc/doas.conf'
 installPath="${userInstallerHome}/app"
+updateHelperPath="${userInstallerHome}/update.sh"
 serviceUnitPath='/etc/systemd/system/ldrd.service'
 
 repoURL='https://github.com/analogjupiter/linedubbed.git'
@@ -123,11 +124,15 @@ useradd \
 
 # Configure doas.
 writeln '= Configuring `doas`.'
-echo "permit nopass root as ${userInstaller}" >>"${doasConf}"
-echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args start   ldrd.service" >>"${doasConf}"
-echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args stop    ldrd.service" >>"${doasConf}"
-echo "permit nopass ${userInstaller} as root cmd /bin/systemctl args restart ldrd.service" >>"${doasConf}"
-echo "permit nopass ${userInstaller} as ${userDaemon}" >>"${doasConf}"
+echo "# == lineDUBbed/runner ==
+permit nopass root as ${userInstaller}
+permit nopass ${userInstaller} as ${userInstaller}
+permit nopass ${userInstaller} as root cmd /bin/systemctl args start   ldrd.service
+permit nopass ${userInstaller} as root cmd /bin/systemctl args stop    ldrd.service
+permit nopass ${userInstaller} as root cmd /bin/systemctl args restart ldrd.service
+permit nopass ${userInstaller} as ${userDaemon}
+# == lineDUBbed/runner end ==" \
+	>> "${doasConf}"
 
 # Download application.
 writeln '= Downloading repository.'
@@ -150,16 +155,22 @@ RestartSec=2
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
-" >"${serviceUnitPath}"
+WantedBy=multi-user.target" \
+	> "${serviceUnitPath}"
 systemctl daemon-reload
+
+# Create update-helper.
+writeln '= Installing update-helper script.'
+echo "#!/bin/sh
+args=\"\$@\"
+doas -u ${userInstaller} sh -c \"cd '${installPath}/runner' && ./update.sh \${args}\"" \
+	> "${updateHelperPath}"
+chmod +x "${updateHelperPath}"
 
 # Run updater.
 writeln '= Launching updater to finalize the installation process.'
-pushd "${installPath}/runner"
-doas -u "${userInstaller}" \
-	./updater.sh -y
-popd
+"${updateHelperPath}" -y
+writeln '= Finalization successful.'
 
 # Goodbye.
 writeln '= Installation completed.'
@@ -168,7 +179,7 @@ writeln '= Installation completed.'
 writeln ''
 read -p 'Do you want to enable the lineDUBbed/runner daemon now? [Yn] ' -r confirmDaemon
 if [ "${confirmDaemon}" != 'y' ] && [ "${confirmDaemon}" != 'Y' ] && [ "${confirmDaemon}" != '' ]; then
-	writeln 'Alright.'
+	writeln '= Won''t enable daemon (for now).'
 	exit 0
 fi
 

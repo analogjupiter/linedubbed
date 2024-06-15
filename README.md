@@ -18,7 +18,7 @@ Abbreviated as LDR.
 | RAM | 2 GB | 8 GB |
 | Disk space | ? | 64 GB |
 
-Runners are supposed to be treated like an appliance.
+Runners are supposed to be deployed as appliances.
 Install the runner on a newly installed machine
 dedicated to running LDR.
 
@@ -48,6 +48,5 @@ chmod +x ldr-setup.sh
 ### Update
 
 ```sh
-cd /opt/ldr/app/runner
-doas -u ldri ./update.sh
+/opt/ldr/update.sh
 ```
