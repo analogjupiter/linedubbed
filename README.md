@@ -16,6 +16,7 @@ Abbreviated as LDR.
 | Operating System | Debian 12 | Debian 12 |
 | CPU | dual-core | quad-core |
 | RAM | 2 GB | 8 GB |
+| Disk space | ? | 64 GB |
 
 Runners are supposed to be treated like an appliance.
 Install the runner on a newly installed machine

@@ -28,6 +28,10 @@ final class DaemonCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        while (true) {
+            // TODO
+            sleep(1);
+        }
         return Command::SUCCESS;
     }
 }
