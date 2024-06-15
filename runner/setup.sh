@@ -148,6 +148,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
+User=${userDaemon}
+Group=${userDaemon}
 WorkingDirectory=${userDaemonHome}
 ExecStart=${installPath}/runner/ldr ldr:daemon
 TimeoutStartSec=0
