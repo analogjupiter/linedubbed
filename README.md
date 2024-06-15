@@ -44,3 +44,10 @@ curl -sSLo ldr-setup.sh https://github.com/analogjupiter/linedubbed/blob/main/ru
 chmod +x ldr-setup.sh
 ./ldr-setup.sh
 ```
+
+### Update
+
+```sh
+cd /opt/ldr/app/runner
+doas -u ldri ./updater.sh
+```

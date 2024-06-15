@@ -14,9 +14,9 @@ errorln() {
 }
 
 userInstaller='ldri'
-userInstallerHome="/opt/${userInstaller}"
+userInstallerHome="/opt/ldr"
 userDaemon='ldrd'
-userDaemonHome="/var/lib/${userDaemon}"
+userDaemonHome="/var/lib/ldr"
 
 doasConf='/etc/doas.conf'
 installPath="${userInstallerHome}/app"
