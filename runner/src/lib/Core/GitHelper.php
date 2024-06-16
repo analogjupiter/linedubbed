@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Linedubbed\Runner;
+namespace Linedubbed\Runner\Core;
 
 final class GitHelper
 {

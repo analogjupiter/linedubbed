@@ -64,7 +64,8 @@ set -e
 # Stop service.
 if [ $daemonWasRunning == true ]; then
 	writeln '= Stopping the LDR daemon.'
-	doas -u root /bin/systemctl stop ldrd.service
+	doas -u root \
+		systemctl stop ldrd.service
 fi
 
 # Update repo.
@@ -81,7 +82,8 @@ writeln '= Migrating installation.'
 # Restart service.
 if [ $daemonWasRunning == true ]; then
 	writeln '= Restarting the LDR daemon.'
-	doas -u root /bin/systemctl start ldrd.service
+	doas -u root \
+		systemctl start ldrd.service
 fi
 
 # Goodbye.

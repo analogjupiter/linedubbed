@@ -20,6 +20,8 @@ userDaemonHome="/var/lib/ldr"
 
 doasConf='/etc/doas.conf'
 installPath="${userInstallerHome}/app"
+installStatePath="${installPath}/runner/.local"
+installStateSentinelPath="${installPath}/is-installed"
 updateHelperPath="${userInstallerHome}/update.sh"
 serviceUnitPath='/etc/systemd/system/ldrd.service'
 
@@ -126,10 +128,8 @@ useradd \
 writeln '= Configuring `doas`.'
 echo "# == lineDUBbed/runner ==
 permit nopass root as ${userInstaller}
+permit nopass ${userInstaller} as root
 permit nopass ${userInstaller} as ${userInstaller}
-permit nopass ${userInstaller} as root cmd /bin/systemctl args start   ldrd.service
-permit nopass ${userInstaller} as root cmd /bin/systemctl args stop    ldrd.service
-permit nopass ${userInstaller} as root cmd /bin/systemctl args restart ldrd.service
 permit nopass ${userInstaller} as ${userDaemon}
 # == lineDUBbed/runner end ==" \
 	>> "${doasConf}"
@@ -168,6 +168,11 @@ args=\"\$@\"
 doas -u ${userInstaller} sh -c \"cd '${installPath}/runner' && ./update.sh \${args}\"" \
 	> "${updateHelperPath}"
 chmod +x "${updateHelperPath}"
+
+# Create installation-state directory.
+writeln '= Flagging app as installed.'
+mkdir "${installStatePath}"
+date -u > "${installStateSentinelPath}"
 
 # Run updater.
 writeln '= Launching updater to finalize the installation process.'
