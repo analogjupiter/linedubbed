@@ -41,7 +41,6 @@ final class Migrator
 
         $dir = new DirectoryIterator($this->migrationsDir);
         foreach ($dir as $file) {
-            var_dump($file->getPathname());
             if (!$file->isFile()) {
                 continue;
             }
