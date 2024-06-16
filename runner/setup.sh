@@ -21,7 +21,7 @@ userDaemonHome="/var/lib/ldr"
 doasConf='/etc/doas.conf'
 installPath="${userInstallerHome}/app"
 installStatePath="${installPath}/runner/.local"
-installStateSentinelPath="${installPath}/is-installed"
+installStateSentinelPath="${installStatePath}/is-installed"
 updateHelperPath="${userInstallerHome}/update.sh"
 serviceUnitPath='/etc/systemd/system/ldrd.service'
 
